@@ -2,6 +2,7 @@ package nl.tudelft.jpacman.level;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test suite to confirm that {@link Score} correctly stores and
@@ -28,7 +29,11 @@ class ScoreTest {
      */
     @Test
     void testInitialPoints() {
-        // TODO
+        // arrange
+        // act
+        //both done is setUp()
+        // assert
+        assertThat(score.getPoints()).isEqualTo(0);
     }
 
     /**
@@ -36,7 +41,12 @@ class ScoreTest {
      */
     @Test
     void testAddPoints() {
-        // TODO
+        // arrange
+        int value =5;
+        // act
+        score.addPoints(value);
+        // assert
+        assertThat(score.getPoints()).isEqualTo(value);
     }
 
     /**
@@ -44,7 +54,13 @@ class ScoreTest {
      */
     @Test
     void testAddPointsTwice() {
-        // TODO
+        // arrange
+        int value=5;
+        // act
+        score.addPoints(value);
+        score.addPoints(value);
+        // assert
+        assertThat(score.getPoints()).isEqualTo(value*2);
     }
 
     /**
@@ -52,6 +68,11 @@ class ScoreTest {
      */
     @Test
     void testAddNegativePoints() {
-        // TODO
+        // arrange
+        int value=-5;
+        // act
+        score.addPoints(value);
+        // assert
+        assertThat(score.getPoints()).isEqualTo(value);
     }
 }

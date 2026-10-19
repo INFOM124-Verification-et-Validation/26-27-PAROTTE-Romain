@@ -3,6 +3,7 @@ package nl.tudelft.jpacman.board;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.mockito.Mockito.mock;
 
@@ -26,7 +27,7 @@ class BoardTest {
      */
     @Test
     void verifyWidth() {
-        // TODO
+        assertThat(board.getWidth()).isEqualTo(MAX_WIDTH);
     }
 
     /**
@@ -34,7 +35,7 @@ class BoardTest {
      */
     @Test
     void verifyHeight() {
-        // TODO
+        assertThat(board.getHeight()).isEqualTo(MAX_HEIGHT);
     }
 
     /**
@@ -49,6 +50,6 @@ class BoardTest {
             "0, 1"
         })
     void testSquareAt(int x, int y) {
-        // TODO
+        assertThat(board.squareAt(x,y)).isNotNull();
     }
 }

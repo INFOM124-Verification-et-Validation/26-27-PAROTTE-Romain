@@ -17,21 +17,50 @@ class DirectionTest {
      */
     @Test
     void testNorth() {
-        // TODO
+        //arrange
+        Direction north =Direction.NORTH;
+        //act
+        int x = north.getDeltaX();
+        int y = north.getDeltaY();
+        //assert
+        assertThat(x).isEqualTo(0);
+        assertThat(y).isEqualTo(-1);
     }
 
     @Test
     void testSouth() {
-        // TODO
+        //arrange
+        Direction south =Direction.SOUTH;
+        //act
+        int x = south.getDeltaX();
+        int y = south.getDeltaY();
+        //assert
+        assertThat(x).isEqualTo(0);
+        assertThat(y).isEqualTo(1);
     }
 
     @Test
     void testEast() {
-        // TODO
+        //arrange
+        Direction east =Direction.EAST;
+        //act
+        int x = east.getDeltaX();
+        int y = east.getDeltaY();
+        //assert
+        assertThat(x).isEqualTo(1);
+        assertThat(y).isEqualTo(0);
+
     }
 
     @Test
     void testWest() {
-        // TODO
+        //arrange
+        Direction west =Direction.WEST;
+        //act
+        int x = west.getDeltaX();
+        int y = west.getDeltaY();
+        //assert
+        assertThat(x).isEqualTo(-1);
+        assertThat(y).isEqualTo(0);
     }
 }
