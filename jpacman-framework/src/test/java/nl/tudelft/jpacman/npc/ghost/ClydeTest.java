@@ -1,60 +1,89 @@
 package nl.tudelft.jpacman.npc.ghost;
 
-import java.util.ArrayList;
-import java.util.List;
 import nl.tudelft.jpacman.board.BoardFactory;
 import nl.tudelft.jpacman.board.Direction;
-import nl.tudelft.jpacman.level.Level;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import nl.tudelft.jpacman.level.LevelFactory;
-import nl.tudelft.jpacman.level.Player;
-import nl.tudelft.jpacman.level.PlayerFactory;
+import nl.tudelft.jpacman.level.*;
 import nl.tudelft.jpacman.sprite.PacManSprites;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class ClydeTest {
+    PacManSprites sprites = new PacManSprites();
+    GhostFactory ghostFactory = new GhostFactory(sprites);
+    LevelFactory levelFactory = new LevelFactory(sprites, ghostFactory);
+    BoardFactory boardFactory = new BoardFactory(sprites);
+    public MapParser mapParser = new GhostMapParser(levelFactory, boardFactory, ghostFactory);
+    public PlayerFactory playerFactory = new PlayerFactory(sprites);
 
 
-public class ClydeTest {
-    private Level level;
-    private ArrayList<String> map= new ArrayList<>();
-    private Clyde clyde;
-    private GhostMapParser gmf;
-    @BeforeEach
-    void setUp() {
-        PacManSprites sprites = new PacManSprites();
-        gmf = new GhostMapParser(new LevelFactory(sprites,new GhostFactory(sprites)),new BoardFactory(sprites),new GhostFactory(sprites));
+    // T1
+    @Test
+    void clydeShouldGoAwayFromPacmanWhenCloseTest() {
+        List<String> map = Arrays.asList(
+            "############",
+            "#P      C  #",
+            "############"
+        );
+        Level level = mapParser.parseMap(map);
+        Player pacman = playerFactory.createPacMan();
+        level.registerPlayer(pacman);
+        pacman.setDirection(Direction.EAST);
+
+        Clyde clyde = Navigation.findUnitInBoard(Clyde.class, level.getBoard());
+        assertNotNull(clyde);
+
+        Optional<Direction> move = clyde.nextAiMove();
+
+        assertTrue(move.isPresent());
+        assertEquals(Direction.EAST, move.get());
     }
 
-    /*
-    * Testing clyde behaviour when far from Pacman  >8square
-    * */
+    // T2
     @Test
-    void farFromPac(){
-        map.add("##############");
-        map.add("#P          C#");
-        map.add("##############");
-        level = gmf.parseMap(map);
-        clyde = (Clyde) level.getBoard().squareAt(0,11).getOccupants().get(0);
-        assertThat(clyde.nextAiMove()).isEqualTo(Direction.WEST);
+    void clydeShouldNotMoveTest() {
+        List<String> map = Arrays.asList(
+            "############",
+            "#P      #C##",
+            "############"
+        );
+        Level level = mapParser.parseMap(map);
+        Player pacman = playerFactory.createPacMan();
+        level.registerPlayer(pacman);
+        pacman.setDirection(Direction.EAST);
+
+        Clyde clyde = Navigation.findUnitInBoard(Clyde.class, level.getBoard());
+        assertNotNull(clyde);
+
+        Optional<Direction> move = clyde.nextAiMove();
+
+        assertTrue(move.isEmpty());
     }
 
-    /*
-    * Testing clyde behaviour when near to Pacman =<8square*/
+    // T4
     @Test
-    void nearToPac(){}
+    void clydeShouldGetCloserToPacManWhenFarTest() {
+        List<String> map = Arrays.asList(
+            "############",
+            "#P        C#",
+            "############"
+        );
 
-    /*
-    * Testing behaviour switch when clyde come near the 8 square border from far to near
-    * */
-    @Test
-    void farToNear(){}
+        Level level = mapParser.parseMap(map);
+        Player pacman = playerFactory.createPacMan();
+        level.registerPlayer(pacman);
+        pacman.setDirection(Direction.EAST);
 
-    /*
-     * Testing behaviour switch when clyde come near the 8 square border from near to far
-     * */
-    @Test
-    void nearToFar(){}
+        Clyde clyde = Navigation.findUnitInBoard(Clyde.class, level.getBoard());
+        assertNotNull(clyde);
+
+        Optional<Direction> move = clyde.nextAiMove();
+
+        assertTrue(move.isPresent());
+        assertEquals(Direction.WEST, move.get());
+    }
 }
