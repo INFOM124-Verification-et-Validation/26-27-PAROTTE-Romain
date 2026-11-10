@@ -6,11 +6,11 @@
 
 Analyze the requirements found in `docs/scenarios.md` and derive a decision table for the JPacman collisions from it. In this decision table you should encode the outcomes of collisions between two pairs of entities. You are free to filter out collisions that do not occur, such as two `Pellet` colliding. Make your decision table based on the table below. Note that this table is incomplete and may have too many or too few columns.
 
-|                 |        |       |        |    |
-|-----------------|--------|-------|--------|----|
-| **Collider**    | Ghost  | ??    | ??     | ?? |
-| **Collidee**    | Pellet | Ghost | Pellet | ?? |
-| **Consequence** | ??     | ??    | ??     | ?? |
+|                 |                    |                        |                         |             |              |                          |
+|-----------------|--------------------|------------------------|-------------------------|-------------|--------------|--------------------------|
+| **Collider**    | Ghost              | Ghost                  | Player                  | Player      | Player       | Ghost                    |
+| **Collidee**    | Pellet             | Ghost                  | Pellet                  | Ghost       | Wall         | Wall                     |
+| **Consequence** | Ghost faze <br/>through | Bump in each<br/>other | Pellet is <br/>consumed | Player dies | Player stuck | Ghost bump <br/>into the wall |
 
 
 Based on the decision table above, derive a JUnit test suite for the `level.PlayerCollisions` class using the **specification-based** and **structural-based testing** frameworks. You should be as rigorous as possible here. Think not only of collisions that result in something, but also on collisions where "nothing happens".
