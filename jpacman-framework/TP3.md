@@ -27,17 +27,16 @@ Open the `game.Game` class (and its concrete subclass `game.SinglePlayerGame`). 
 
 Open the `game.GameTest` class: a `Game` is already built for you on top of a mocked `Level` (using `GameFactory#createSinglePlayerGame`), so you can focus entirely on the testing itself.
 
-This time, you have to design the test suite. Read `start()`, `stop()`, `move()`, `levelWon()` and `levelLost()`, and apply **specification-based** and **structural-based testing** to identify the test cases to implement.
+This time, you have to design the test suite. Read `start()`, `stop()` and `move()`, and apply **specification-based** and **structural-based testing** to identify the test cases to implement.
 Write one JUnit test per case you identified, using Mockito's `when(...)` to stub the mocked `level` and `verify(...)` to check that `Game` interacts with `level` as expected (or does *not* interact with it, using `verify(level, never())...`).
 
-> Tip: some of these methods interact with each other (e.g. `start()` sets the state that `move()` and `stop()` depend on). Make sure your tests set up the game's state explicitly rather than relying on the order in which you happen to run them.
+> Hint: Mockito docs, and more on `verify(...)` and `when(...)` methods
+> - https://site.mockito.org/
+> - https://www.baeldung.com/mockito-verify
+> - https://www.baeldung.com/mockito-behavior
 
 ## Exercise 4
 
-Write a test suite for the `nl.tudelft.jpacman.level.MapParser` class and those methods:
-- `checkMapFormat(List<String> text)`
-- `addSquare(Square[][] grid, List<Ghost> ghosts, List<Square> startPositions, int x, int y, char c)`
-- `parseMap(List<String> text)`
-- `makeGhostSquare(List<Ghost> ghosts, Ghost ghost)`
+The class `nl.tudelft.jpacman.level.MapParser` translates a map description into a `Level` object. It collaborates with `BoardFactory` and `LevelFactory` to create the board, squares, pellets, ghosts, and level. Write a test suite for `checkMapFormat(List<String> text)`, `makeGhostSquare(List<Ghost> ghosts, Ghost ghost)` and `parseMap(char[][] map)`. Use assertions to check results and state, and Mockito's `mock(...)`, `when(...)` and `verify(...)` methods to check important interactions with collaborators.
 
-Some methods will need mocks of the factories used in the `MapParser` class. Using Mockito to mock them and use the `verify` method to verify that a map leads to the proper interactions with those factories. Do not forget to use the assertions to check what you want to check in your test.
+Begin with `checkMapFormat(List<String> text)` that does not need any mocks. Then create the tests for `makeGhostSquare(List<Ghost> ghosts, Ghost ghost)` and finish by `parseMap(char[][] map), which is more complex than the others.

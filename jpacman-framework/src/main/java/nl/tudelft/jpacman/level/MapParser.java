@@ -182,7 +182,7 @@ public class MapParser {
      * @param text Map to be checked
      * @throws PacmanConfigurationException if map is not OK.
      */
-    private void checkMapFormat(List<String> text) {
+    protected void checkMapFormat(List<String> text) {
         if (text == null) {
             throw new PacmanConfigurationException(
                 "Input text cannot be null.");
