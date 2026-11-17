@@ -34,7 +34,7 @@
 		<spotbugs.version>4.7.3</spotbugs.version>
 		<spotbugs.plugin.version>4.7.3.4</spotbugs.plugin.version>
 		<guava.plugin.version>31.1-jre</guava.plugin.version>
-<!--		<jacoco.plugin.version>0.8.9</jacoco.plugin.version>-->
+		<jacoco.plugin.version>0.8.16</jacoco.plugin.version>
 		<jar.plugin.version>3.0.2</jar.plugin.version>
 		<jxr.plugin.version>2.5</jxr.plugin.version>
 		<projectinfo.plugin.version>2.9</projectinfo.plugin.version>
@@ -280,25 +280,25 @@
 					<trimStackTrace>false</trimStackTrace>
 				</configuration>
 			</plugin>
-<!--			<plugin>-->
-<!--				<groupId>org.jacoco</groupId>-->
-<!--				<artifactId>jacoco-maven-plugin</artifactId>-->
-<!--				<version>${jacoco.plugin.version}</version>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<id>default-prepare-agent</id>-->
-<!--						<goals>-->
-<!--							<goal>prepare-agent</goal>-->
-<!--						</goals>-->
-<!--					</execution>-->
-<!--					<execution>-->
-<!--						<id>default-report</id>-->
-<!--						<goals>-->
-<!--							<goal>report</goal>-->
-<!--						</goals>-->
-<!--					</execution>-->
-<!--				</executions>-->
-<!--			</plugin>-->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>default-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-report</id>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -323,18 +323,18 @@
 
 	<reporting>
 		<plugins>
-<!--			<plugin>-->
-<!--				<groupId>org.jacoco</groupId>-->
-<!--				<artifactId>jacoco-maven-plugin</artifactId>-->
-<!--				<version>${jacoco.plugin.version}</version>-->
-<!--				<reportSets>-->
-<!--					<reportSet>-->
-<!--						<reports>-->
-<!--							<report>report</report>-->
-<!--						</reports>-->
-<!--					</reportSet>-->
-<!--				</reportSets>-->
-<!--			</plugin>-->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.plugin.version}</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>

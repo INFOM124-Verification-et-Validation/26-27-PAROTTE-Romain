@@ -9,7 +9,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests the game's interaction with its level.
@@ -101,4 +107,59 @@ class GameTest {
 
     }
 
+
+    @Test
+    void startWithRemainingPlayerAndPellets() {
+        when(mockLevel.isAnyPlayerAlive()).thenReturn(true);
+        when(mockLevel.remainingPellets()).thenReturn(1);
+
+        game.start();
+
+        assertTrue(game.isInProgress());
+        verify(mockLevel).isAnyPlayerAlive();
+        verify(mockLevel).remainingPellets();
+        verify(mockLevel).addObserver(game);
+        verify(mockLevel).start();
+    }
+
+    @Test
+    void startWithRemainingPlayerAndNoPellet() {
+        when(mockLevel.isAnyPlayerAlive()).thenReturn(true);
+        when(mockLevel.remainingPellets()).thenReturn(0);
+
+        game.start();
+
+        assertThat(game.isInProgress()).isFalse();
+        verify(mockLevel).isAnyPlayerAlive();
+        verify(mockLevel).remainingPellets();
+        verify(mockLevel, never()).addObserver(game);
+        verify(mockLevel, never()).start();
+    }
+
+    @Test
+    void startWithNoRemainingPlayerNorPellet() {
+        when(mockLevel.isAnyPlayerAlive()).thenReturn(false);
+        when(mockLevel.remainingPellets()).thenReturn(0);
+
+        game.start();
+
+        assertThat(game.isInProgress()).isFalse();
+        verify(mockLevel).isAnyPlayerAlive();
+        verify(mockLevel, never()).remainingPellets();
+        verify(mockLevel, never()).addObserver(game);
+        verify(mockLevel, never()).start();
+    }
+
+    @Test
+    void startWithProgress() {
+        when(mockLevel.isAnyPlayerAlive()).thenReturn(true);
+        when(mockLevel.remainingPellets()).thenReturn(1);
+
+        game.start();
+        game.start();
+
+        assertThat(game.isInProgress()).isTrue();
+        verify(mockLevel, times(1)).addObserver(game);
+        verify(mockLevel, times(1)).start();
+    }
 }
