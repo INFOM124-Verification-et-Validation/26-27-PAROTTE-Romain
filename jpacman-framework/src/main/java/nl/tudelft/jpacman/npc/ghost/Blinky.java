@@ -1,12 +1,12 @@
 package nl.tudelft.jpacman.npc.ghost;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.io.Console;
+import java.util.*;
 
 import nl.tudelft.jpacman.board.Direction;
 import nl.tudelft.jpacman.board.Square;
 import nl.tudelft.jpacman.board.Unit;
+import nl.tudelft.jpacman.level.Pellet;
 import nl.tudelft.jpacman.level.Player;
 import nl.tudelft.jpacman.npc.Ghost;
 import nl.tudelft.jpacman.sprite.Sprite;
@@ -41,6 +41,23 @@ import nl.tudelft.jpacman.sprite.Sprite;
  *
  */
 public class Blinky extends Ghost {
+    private enum State {
+        CHASE,
+        CORNER
+    }
+    private void updateState(){
+        phase ++;
+        if( (phase%12)<8){
+            currentState= State.CHASE;
+            return;
+        }
+        currentState = State.CORNER;
+    }
+
+    private long phase=0;
+    private State currentState = State.CHASE;
+
+    private Square cornerTarget =setCornerTarget();
 
     /**
      * The variation in intervals, this makes the ghosts look more dynamic and
@@ -82,19 +99,83 @@ public class Blinky extends Ghost {
     public Optional<Direction> nextAiMove() {
         assert hasSquare();
 
-        // TODO Blinky should patrol his corner every once in a while
-        // TODO Implement his actual behaviour instead of simply chasing.
-        Unit nearest = Navigation.findNearest(Player.class, getSquare());
-        if (nearest == null) {
+        Square target = null;
+        switch (currentState){
+            case CHASE:
+                target = chaseLogic();
+                break;
+            case CORNER:
+                target= cornerLogic();
+                break;
+            default:
+                System.out.println("Undefined behaviour for "+currentState+" state for Blinky");
+                target =chaseLogic();
+
+        }
+        //cycle to next phase
+        updateState();
+
+        if (target == null) {
             return Optional.empty();
         }
-        assert nearest.hasSquare();
-        Square target = nearest.getSquare();
-
         List<Direction> path = Navigation.shortestPath(getSquare(), target, this);
         if (path != null && !path.isEmpty()) {
             return Optional.ofNullable(path.get(0));
         }
         return Optional.empty();
+    }
+
+    private Square cornerLogic(){
+        if (getSquare()== cornerTarget){
+            return chaseLogic();
+        }
+        return cornerTarget;
+    }
+
+    private Square chaseLogic(){
+        Unit move =Navigation.findNearest(Player.class, getSquare());
+        if (move ==null){
+            return null;
+        }
+        assert move.hasSquare();
+        return move.getSquare();
+    }
+    private Square setCornerTarget(){
+        List<cornerTargetSearchNode> toDo = new ArrayList<>();
+        Set<cornerTargetSearchNode> visited = new HashSet<>();
+
+        toDo.add(new cornerTargetSearchNode(getSquare(),0,0));
+        cornerTargetSearchNode currentCorner = toDo.get(0);
+        while (!toDo.isEmpty()) {
+            cornerTargetSearchNode square = toDo.remove(0);
+            if (currentCorner.x < square.x && currentCorner.y > square.y){
+                currentCorner = square;
+            }
+            visited.add(square);
+            for (Direction direction : Direction.values()) {
+                cornerTargetSearchNode newTarget=null;
+                switch (direction){
+                    case NORTH -> newTarget= new cornerTargetSearchNode(square.square.getSquareAt(direction),square.x,square.y+1);
+                    case EAST -> newTarget= new cornerTargetSearchNode(square.square.getSquareAt(direction),square.x+1,square.y);
+                    case WEST -> newTarget= new cornerTargetSearchNode(square.square.getSquareAt(direction),square.x-1,square.y);
+                    case SOUTH -> newTarget= new cornerTargetSearchNode(square.square.getSquareAt(direction),square.x,square.y-1);
+                }
+
+                if (!visited.contains(newTarget) && !toDo.contains(newTarget)) {
+                    toDo.add((newTarget));
+                }
+            }
+
+        }
+            return currentCorner.square;
+    }
+    private class cornerTargetSearchNode {
+        public Square square;
+        public int x,y;
+        cornerTargetSearchNode(Square square, int x, int y){
+            this.square = square;
+            this.x = x;
+            this.y = y;
+        }
     }
 }
