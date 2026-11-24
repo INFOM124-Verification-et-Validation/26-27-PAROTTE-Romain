@@ -1,12 +1,11 @@
 package nl.tudelft.jpacman.npc.ghost;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import nl.tudelft.jpacman.board.Direction;
 import nl.tudelft.jpacman.board.Square;
 import nl.tudelft.jpacman.board.Unit;
+import nl.tudelft.jpacman.level.Pellet;
 import nl.tudelft.jpacman.level.Player;
 import nl.tudelft.jpacman.npc.Ghost;
 import nl.tudelft.jpacman.sprite.Sprite;
@@ -53,14 +52,65 @@ public class Blinky extends Ghost {
      */
     private static final int MOVE_INTERVAL = 250;
 
+    private static final int MOVE_SPEED_UP_INTERVAL=150;
+
+    private Set<Square> hasPellet = new HashSet<>();
+
+    private boolean initial = true;
+
+
+    // TODO Blinky should speed up when there are a few pellets left, but he
+    // has no way to find out how many there are.
+
+    @Override
+    public long getInterval() {
+        if (getPelletCount()>20){return Blinky.MOVE_INTERVAL + new Random().nextInt(Blinky.INTERVAL_VARIATION);}
+        return Blinky.MOVE_SPEED_UP_INTERVAL + new Random().nextInt(Blinky.INTERVAL_VARIATION);
+    }
+
+    private int getPelletCount(){
+        int pelletCount =0;
+        if (initial){
+            initial=false;
+            List<Square> toDo = new ArrayList<>();
+            Set<Square> visited = new HashSet<>();
+            toDo.add(this.getSquare());
+
+            while (!toDo.isEmpty()) {
+                Square square = toDo.remove(0);
+                Unit unit = Navigation.findUnit(Pellet.class, square);
+                if (unit != null) {
+                    assert unit.hasSquare();
+                    hasPellet.add(square);
+                    pelletCount++;
+                }
+            visited.add(square);
+            for (Direction direction : Direction.values()) {
+                Square newTarget = square.getSquareAt(direction);
+                if (!visited.contains(newTarget) && !toDo.contains(newTarget)) {
+                    toDo.add(newTarget);
+                }
+            }
+        }}
+        else{
+            for(Square square: hasPellet ){
+                Unit unit = Navigation.findUnit(Pellet.class, square);
+                    if(unit!=null){
+                        pelletCount++;
+                    }else{
+                        hasPellet.remove(square);
+                    }
+            }
+        }
+        return pelletCount;
+    }
+
     /**
      * Creates a new "Blinky", a.k.a. "Shadow".
      *
      * @param spriteMap
      *            The sprites for this ghost.
      */
-    // TODO Blinky should speed up when there are a few pellets left, but he
-    // has no way to find out how many there are.
     public Blinky(Map<Direction, Sprite> spriteMap) {
         super(spriteMap, MOVE_INTERVAL, INTERVAL_VARIATION);
     }
@@ -81,7 +131,6 @@ public class Blinky extends Ghost {
     @Override
     public Optional<Direction> nextAiMove() {
         assert hasSquare();
-
         // TODO Blinky should patrol his corner every once in a while
         // TODO Implement his actual behaviour instead of simply chasing.
         Unit nearest = Navigation.findNearest(Player.class, getSquare());
