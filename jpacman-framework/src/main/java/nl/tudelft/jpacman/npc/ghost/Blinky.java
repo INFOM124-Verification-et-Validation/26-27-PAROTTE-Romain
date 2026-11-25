@@ -1,15 +1,14 @@
 package nl.tudelft.jpacman.npc.ghost;
 
-import java.io.Console;
 import java.util.*;
 
 import nl.tudelft.jpacman.board.Direction;
 import nl.tudelft.jpacman.board.Square;
 import nl.tudelft.jpacman.board.Unit;
-import nl.tudelft.jpacman.level.Pellet;
 import nl.tudelft.jpacman.level.Player;
 import nl.tudelft.jpacman.npc.Ghost;
 import nl.tudelft.jpacman.sprite.Sprite;
+
 
 /**
  * <p>
@@ -41,7 +40,7 @@ import nl.tudelft.jpacman.sprite.Sprite;
  *
  */
 public class Blinky extends Ghost {
-    private enum State {
+    public enum State {
         CHASE,
         CORNER
     }
@@ -56,9 +55,11 @@ public class Blinky extends Ghost {
 
     private long phase=0;
     private State currentState = State.CHASE;
+    public State getCurrentState(){return currentState;}
 
-    private Square cornerTarget =setCornerTarget();
-
+    private Square cornerTarget;
+    public Square getCornerTarget(){return cornerTarget;}
+    private boolean setTarget=true;
     /**
      * The variation in intervals, this makes the ghosts look more dynamic and
      * less predictable.
@@ -97,6 +98,7 @@ public class Blinky extends Ghost {
      */
     @Override
     public Optional<Direction> nextAiMove() {
+        if(setTarget){setCornerTarget(); setTarget=false;}
         assert hasSquare();
 
         Square target = null;
@@ -114,7 +116,6 @@ public class Blinky extends Ghost {
         }
         //cycle to next phase
         updateState();
-
         if (target == null) {
             return Optional.empty();
         }
@@ -129,6 +130,7 @@ public class Blinky extends Ghost {
         if (getSquare()== cornerTarget){
             return chaseLogic();
         }
+        assert cornerTarget != null;
         return cornerTarget;
     }
 
@@ -140,34 +142,34 @@ public class Blinky extends Ghost {
         assert move.hasSquare();
         return move.getSquare();
     }
-    private Square setCornerTarget(){
+    private void setCornerTarget(){
         List<cornerTargetSearchNode> toDo = new ArrayList<>();
-        Set<cornerTargetSearchNode> visited = new HashSet<>();
+        Set<Square> visited = new HashSet<>();
 
         toDo.add(new cornerTargetSearchNode(getSquare(),0,0));
         cornerTargetSearchNode currentCorner = toDo.get(0);
         while (!toDo.isEmpty()) {
             cornerTargetSearchNode square = toDo.remove(0);
-            if (currentCorner.x < square.x && currentCorner.y > square.y){
+            if (currentCorner.x <= square.x && currentCorner.y <= square.y){
                 currentCorner = square;
             }
-            visited.add(square);
+            visited.add(square.square);
             for (Direction direction : Direction.values()) {
                 cornerTargetSearchNode newTarget=null;
+                if(square.square.getSquareAt(direction).isAccessibleTo(this)){
                 switch (direction){
                     case NORTH -> newTarget= new cornerTargetSearchNode(square.square.getSquareAt(direction),square.x,square.y+1);
                     case EAST -> newTarget= new cornerTargetSearchNode(square.square.getSquareAt(direction),square.x+1,square.y);
                     case WEST -> newTarget= new cornerTargetSearchNode(square.square.getSquareAt(direction),square.x-1,square.y);
                     case SOUTH -> newTarget= new cornerTargetSearchNode(square.square.getSquareAt(direction),square.x,square.y-1);
-                }
-
-                if (!visited.contains(newTarget) && !toDo.contains(newTarget)) {
+                }}
+                if (newTarget!= null && !visited.contains(newTarget.square) && !toDo.contains(newTarget)) {
                     toDo.add((newTarget));
                 }
             }
 
         }
-            return currentCorner.square;
+            cornerTarget = currentCorner.square;
     }
     private class cornerTargetSearchNode {
         public Square square;
@@ -176,6 +178,17 @@ public class Blinky extends Ghost {
             this.square = square;
             this.x = x;
             this.y = y;
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof cornerTargetSearchNode other)) return false;
+            return Objects.equals(this.square, other.square);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(square);
         }
     }
 }
