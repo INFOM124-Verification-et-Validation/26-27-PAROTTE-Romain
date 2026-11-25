@@ -84,7 +84,7 @@ public class BlinkyTest {
         int repeat=8;
         Optional<Direction> move;
         while(repeat>0){
-         move= blinky.nextAiMove();
+         blinky.nextAiMove();
          repeat--;
         }
         move= blinky.nextAiMove();
