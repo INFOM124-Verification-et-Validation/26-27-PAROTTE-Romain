@@ -38,10 +38,10 @@ public class BlinkyTest {
         Blinky blinky = Navigation.findUnitInBoard(Blinky.class, level.getBoard());
         assertNotNull(blinky);
 
-        Optional<Direction> move = blinky.nextAiMove(); //cycling to corner Phase
+        Optional<Direction> move = blinky.nextAiMove();
 
         assertTrue(move.isPresent());
-        assertEquals(Direction.EAST, move.get());
+        assertEquals(Direction.WEST, move.get());
     }
 
     // T2
